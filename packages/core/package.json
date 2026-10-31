@@ -1,0 +1,21 @@
+{
+  "name": "loadlet",
+  "version": "0.0.0",
+  "private": true,
+  "description": "依赖感知的加载请求与持续会话",
+  "type": "module",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts"
+    }
+  },
+  "scripts": {
+    "check": "vp check"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

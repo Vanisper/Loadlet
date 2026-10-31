@@ -1,0 +1,24 @@
+{
+  "name": "@loadlet/module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Loadlet 的 JS/TS 模块加载适配器",
+  "type": "module",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts"
+    }
+  },
+  "scripts": {
+    "check": "vp check"
+  },
+  "dependencies": {
+    "loadlet": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}
