@@ -44,3 +44,28 @@ it("moduleLoader 支持 JavaScript 静态依赖", async () => {
     expect(snapshot.dependencies).toEqual([source.href, value.href]);
   });
 });
+
+it("moduleLoader 每轮重新执行本地依赖", async () => {
+  await withTempDirectory(async (directory) => {
+    const value = fileUrl(directory, "value.js");
+    const source = fileUrl(directory, "entry.ts");
+    await writeText(value, "export const title = 'first';\n");
+    await writeText(source, "import { title } from './value.js';\n\nexport { title };\n");
+
+    const loadTitle = async () => {
+      const snapshot = await load({
+        source,
+        loader: moduleLoader(),
+        process: (namespace) => {
+          if (typeof namespace.title !== "string") throw new Error("title must be a string");
+          return namespace.title;
+        },
+      });
+      return snapshot.value;
+    };
+
+    expect(await loadTitle()).toBe("first");
+    await writeText(value, "export const title = 'second';\n");
+    expect(await loadTitle()).toBe("second");
+  });
+});
