@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -21,4 +21,14 @@ export function fileUrl(directory: URL, name: string): URL {
 /** 写入 UTF-8 文本 */
 export async function writeText(file: URL, value: string): Promise<void> {
   await writeFile(file, value, "utf8");
+}
+
+/** 确保演示配置存在，已存在时保留用户内容 */
+export async function ensureTextFile(file: URL, value: string): Promise<void> {
+  await mkdir(new URL(".", file), { recursive: true });
+  await writeFile(file, value, { encoding: "utf8", flag: "wx" }).catch((error: unknown) => {
+    if (!(error instanceof Error) || (error as NodeJS.ErrnoException).code !== "EEXIST") {
+      throw error;
+    }
+  });
 }

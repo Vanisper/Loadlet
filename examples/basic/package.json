@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "check": "vp check",
-    "test": "vp test"
+    "test": "vp test",
+    "watch": "vpx ./src/cli/main.ts"
   },
   "dependencies": {
     "@loadlet/module": "workspace:*",
