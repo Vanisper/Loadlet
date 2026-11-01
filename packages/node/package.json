@@ -4,16 +4,18 @@
   "private": true,
   "description": "Loadlet 的文本读取与本地文件监听",
   "type": "module",
-  "types": "./src/index.d.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
   "scripts": {
     "check": "vp check"
   },
   "dependencies": {
+    "chokidar": "catalog:",
     "loadlet": "workspace:*"
   },
   "devDependencies": {
