@@ -1,0 +1,8 @@
+const title: string = "initial";
+
+export const data = {
+  title,
+  enabled: true,
+  items: ["overview"],
+  server: { port: 8080 },
+};

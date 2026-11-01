@@ -1,0 +1,3 @@
+import { data } from "./data.ts";
+
+export const config = data;

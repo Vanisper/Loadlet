@@ -1,0 +1,6 @@
+title: recovered
+enabled: true
+items:
+  - overview
+server:
+  port: 8080
