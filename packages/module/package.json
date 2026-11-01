@@ -4,17 +4,19 @@
   "private": true,
   "description": "Loadlet 的 JS/TS 模块加载适配器",
   "type": "module",
-  "types": "./src/index.d.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
   "scripts": {
     "check": "vp check"
   },
   "dependencies": {
-    "loadlet": "workspace:*"
+    "loadlet": "workspace:*",
+    "tsx": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
