@@ -4,7 +4,7 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { tsImport } from "tsx/esm/api";
 import type { ModuleNamespace } from "../types.js";
-import { createAdapterError } from "../shared/errors.js";
+import { appendDiagnostic, createAdapterError, isAdapterError } from "../shared/errors.js";
 import type { ModuleSource } from "./import-graph.js";
 
 function modulePath(module: ModuleSource): string {
@@ -36,7 +36,7 @@ export async function executeModuleGraph(
   const runtimeRoot = join(runtimeDirectory, "modules");
   const runtimeEntries = new Map<string, URL>();
 
-  try {
+  async function prepareAndExecute(): Promise<ModuleNamespace> {
     await writeFile(join(runtimeDirectory, "package.json"), '{"type":"module"}\n', "utf8");
     for (const module of modules) {
       const relativePath = relative(root, modulePath(module));
@@ -64,7 +64,47 @@ export async function executeModuleGraph(
     }
 
     return (await tsImport(runtimeEntry.href, { parentURL: entry.href })) as ModuleNamespace;
-  } finally {
-    await rm(runtimeDirectory, { recursive: true, force: true });
   }
+
+  let namespace: ModuleNamespace | undefined;
+  let executionError: unknown;
+  let cleanupError: unknown;
+  try {
+    namespace = await prepareAndExecute();
+  } catch (error) {
+    executionError = error;
+  } finally {
+    try {
+      await rm(runtimeDirectory, { recursive: true, force: true });
+    } catch (error) {
+      cleanupError = error;
+    }
+  }
+
+  if (cleanupError !== undefined) {
+    const diagnostic = {
+      code: "CLEANUP_FAILED" as const,
+      message: "Failed to clean up module runtime",
+      cause: cleanupError,
+    };
+    if (isAdapterError(executionError)) {
+      throw appendDiagnostic(executionError, diagnostic);
+    }
+    if (executionError !== undefined) {
+      throw appendDiagnostic(
+        createAdapterError("LOAD_FAILED", "Failed to execute module", {
+          cause: executionError,
+          file: entry.href,
+        }),
+        diagnostic,
+      );
+    }
+    throw createAdapterError("CLEANUP_FAILED", diagnostic.message, {
+      cause: cleanupError,
+    });
+  }
+
+  if (executionError !== undefined) throw executionError;
+  if (!namespace) throw new Error("Module execution did not return a namespace");
+  return namespace;
 }

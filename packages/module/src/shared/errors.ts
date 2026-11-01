@@ -17,3 +17,21 @@ export function createAdapterError(
   error.diagnostics = diagnostics;
   return error as LoadletError;
 }
+
+export function isAdapterError(error: unknown): error is LoadletError {
+  return (
+    error instanceof Error &&
+    error.name === "LoadletError" &&
+    Array.isArray((error as LoadletError).diagnostics)
+  );
+}
+
+export function appendDiagnostic(error: LoadletError, diagnostic: Diagnostic): LoadletError {
+  const result = new Error(error.message, { cause: error.cause }) as Error & {
+    name: string;
+    diagnostics: [Diagnostic, ...Diagnostic[]];
+  };
+  result.name = error.name;
+  result.diagnostics = [...error.diagnostics, diagnostic];
+  return result as LoadletError;
+}
