@@ -19,7 +19,8 @@ interface EvaluationOptions {
 export type SessionEvaluationResult<Value> =
   | { readonly status: "published"; readonly snapshot: Snapshot<Value> }
   | { readonly status: "superseded" }
-  | { readonly status: "failed"; readonly error: LoadletError };
+  | { readonly status: "failed"; readonly error: LoadletError }
+  | { readonly status: "watch-failed"; readonly error: LoadletError };
 
 export async function runEvaluation<Value>(
   options: EvaluationOptions,
@@ -27,6 +28,7 @@ export async function runEvaluation<Value>(
   const dependencies = new Set<string>();
   let contextEnded = false;
   let stage: "load" | "process" = "load";
+  let watchFailure: LoadletError | undefined;
   const { lease } = options;
 
   const context: EvaluationContext = {
@@ -38,7 +40,12 @@ export async function runEvaluation<Value>(
       }
       const dependency = normalizeDependency(file, lease.attempt);
       dependencies.add(dependency);
-      await options.registry.watch(options.connection, dependency, lease.attempt);
+      try {
+        await options.registry.watch(options.connection, dependency, lease.attempt);
+      } catch (error) {
+        watchFailure = error as LoadletError;
+        throw error;
+      }
       if (!options.isCurrent()) throw createAbortedError(lease.controller.signal);
     },
   };
@@ -52,7 +59,29 @@ export async function runEvaluation<Value>(
         stage = "process";
       },
     );
-    if (!options.isCurrent()) return { status: "superseded" };
+    if (!options.isCurrent() || watchFailure) {
+      options.registry.recover(dependencies);
+      return watchFailure
+        ? { status: "watch-failed", error: watchFailure }
+        : { status: "superseded" };
+    }
+
+    try {
+      const committed = await options.registry.commit(
+        options.connection,
+        dependencies,
+        lease.attempt,
+        options.isCurrent,
+      );
+      if (!committed) {
+        options.registry.recover(dependencies);
+        return { status: "superseded" };
+      }
+    } catch (error) {
+      watchFailure = error as LoadletError;
+      options.registry.recover(dependencies);
+      return { status: "watch-failed", error: watchFailure };
+    }
 
     const snapshot = createSnapshot(
       options.sessionId,
@@ -61,10 +90,10 @@ export async function runEvaluation<Value>(
       outcome.value,
       dependencies,
     );
-    options.registry.commit();
     return { status: "published", snapshot };
   } catch (error) {
     options.registry.recover(dependencies);
+    if (watchFailure) return { status: "watch-failed", error: watchFailure };
     if (!options.isCurrent()) return { status: "superseded" };
     return {
       status: "failed",

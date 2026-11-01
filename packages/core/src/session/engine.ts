@@ -90,6 +90,7 @@ export function createSession<Value>(
 
     if (result.status === "published") settleSnapshot(result.snapshot);
     else if (result.status === "failed") settleFailure(result.error);
+    else if (result.status === "watch-failed") terminate(result.error);
 
     if (scheduler.finish(lease, () => state === "open")) void runNextEvaluation();
   }
