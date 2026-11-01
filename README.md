@@ -4,7 +4,7 @@ Composable loading with reliable reloads.
 
 Loadlet 为应用和开发工具提供可组合的加载会话。加载器获取输入，用户函数生成结果，会话负责依赖监听、串行重载、失败恢复和关闭。
 
-项目处于接口设计阶段，当前提供设计文档与 TypeScript 声明。
+当前已完成核心会话、文本监听、JS/TS 模块加载与基础示例验证的最小闭环。各包保持 private，发布不在当前阶段。
 
 ## 接口预览
 
@@ -55,10 +55,12 @@ console.error(...result.diagnostics);
 | `packages/core`   | `loadlet`         | 加载请求、会话与扩展接口 |
 | `packages/node`   | `@loadlet/node`   | 文本读取与本地文件监听   |
 | `packages/module` | `@loadlet/module` | JS/TS 模块执行与依赖收集 |
+| `examples/basic`  | 示例包            | 基础输入格式与模块闭环   |
 
 适配器依赖核心协议，各自管理运行时依赖；文本消费者可以单独使用 Node 适配器。工作区使用 Vite+ 管理开发检查。
 
 ```sh
 vp install
-vp check
+vp run ready
+vp test
 ```

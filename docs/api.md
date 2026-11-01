@@ -2,7 +2,7 @@
 
 Loadlet 通过 `load` 取得一次结果，通过 `open` 持续维护结果。两者接受相同的来源、加载器和可选处理函数。
 
-本文的 TypeScript 示例用于审阅接口。声明入口见 [core](../packages/core/src/index.d.ts)、[node](../packages/node/src/index.d.ts) 和 [module](../packages/module/src/index.d.ts)。
+本文的 TypeScript 示例用于审阅接口。源码入口见 [core](../packages/core/src/index.ts)、[node](../packages/node/src/index.ts) 和 [module](../packages/module/src/index.ts)。
 
 ## 一次加载
 
