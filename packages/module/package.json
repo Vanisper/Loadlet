@@ -17,11 +17,11 @@
   },
   "dependencies": {
     "loadlet": "workspace:*",
-    "tsx": "catalog:"
+    "tsx": "catalog:runtime"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "vite-plus": "catalog:"
+    "@types/node": "catalog:tooling",
+    "typescript": "catalog:tooling",
+    "vite-plus": "catalog:tooling"
   }
 }

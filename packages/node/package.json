@@ -16,12 +16,12 @@
     "check": "vp check"
   },
   "dependencies": {
-    "chokidar": "catalog:",
+    "chokidar": "catalog:runtime",
     "loadlet": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "vite-plus": "catalog:"
+    "@types/node": "catalog:tooling",
+    "typescript": "catalog:tooling",
+    "vite-plus": "catalog:tooling"
   }
 }
