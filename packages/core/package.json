@@ -4,10 +4,11 @@
   "private": true,
   "description": "依赖感知的加载请求与持续会话",
   "type": "module",
-  "types": "./src/index.d.ts",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
   "scripts": {
