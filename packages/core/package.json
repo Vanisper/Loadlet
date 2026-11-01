@@ -12,6 +12,7 @@
     }
   },
   "scripts": {
+    "build": "vp pack",
     "check": "vp check"
   },
   "devDependencies": {
