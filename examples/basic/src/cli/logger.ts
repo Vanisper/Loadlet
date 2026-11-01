@@ -40,7 +40,7 @@ export function formatWatchLog(
   switch (entry.event) {
     case "startup":
       message = `Loadlet 配置监听 format=${entry.format}`;
-      detail = `配置文件：${fileURLToPath(entry.file)}\n修改并保存文件查看结果；Ctrl+C 退出`;
+      detail = `配置文件： ${fileURLToPath(entry.file)}\n修改并保存文件查看结果；Ctrl+C 退出`;
       break;
     case "snapshot":
       message = `已发布 v${entry.snapshot.version} attempt=${entry.snapshot.attempt} dependencies=${entry.snapshot.dependencies.length}`;
