@@ -75,7 +75,7 @@ export function parseWatchArguments(
   return { type: "watch", file, format };
 }
 
-export const watchHelpText = `Usage: vp -C examples/basic run watch [-- --file <path>] [-- --format <format>]
+export const watchHelpText = `Usage: vp -C examples/basic run watch -- [--file <path>] [--format <format>]
 
 Watch YAML, JSON, INI, text, TS, or JS config and print reload snapshots.
 Formats: yaml, json, ini, text, ts, js. The format is inferred from the file extension.
